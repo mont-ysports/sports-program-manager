@@ -271,8 +271,6 @@ export default function Register() {
                       <option value="">Select gender…</option>
                       <option>Male</option>
                       <option>Female</option>
-                      <option>Non-binary</option>
-                      <option>Prefer not to say</option>
                     </select>
                   </Field>
                 </div>
@@ -523,7 +521,7 @@ export default function Register() {
                   <input
                     type="tel"
                     {...inputProps("parentPhone")}
-                    placeholder="+1 (555) 000-0000"
+                    placeholder="077XXXXXX/088XXXXXX"
                     autoComplete="tel"
                   />
                 </Field>
@@ -554,7 +552,7 @@ export default function Register() {
                   <input
                     type="text"
                     {...inputProps("parentAddress")}
-                    placeholder="123 Main St, City, State"
+                    placeholder="12 Street, City, County"
                     autoComplete="street-address"
                   />
                 </Field>
@@ -658,7 +656,7 @@ export default function Register() {
                   <input
                     type="tel"
                     {...inputProps("emergencyPhone")}
-                    placeholder="+1 (555) 000-0000"
+                    placeholder="077XXXXXX/088XXXXXX"
                   />
                 </Field>
 

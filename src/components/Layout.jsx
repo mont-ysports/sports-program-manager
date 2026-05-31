@@ -165,7 +165,7 @@ export default function Layout() {
               </a>
               <span>
                 {import.meta.env.VITE_PROGRAM_CONTACT_PHONE ||
-                  "+1 (555) 000-0000"}
+                  "+231 777 592214"}
               </span>
             </div>
           </div>

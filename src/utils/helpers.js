@@ -125,23 +125,23 @@ export function debounce(fn, delay) {
 export const PROGRAMS = [
   {
     value: "Basketball",
-    label: "Basketball",
+    label: "Basketball ($75)",
     emoji: "🏀",
-    ages: "4–19",
+    ages: "5–19",
     spots: 300,
     price: 75,
   },
   {
     value: "Computer",
-    label: "Computer",
+    label: "Computer ($65)",
     emoji: "💻",
-    ages: "4–19",
+    ages: "5–19",
     spots: 150,
     price: 65,
   },
   {
     value: "Music",
-    label: "Music",
+    label: "Music ($65)",
     emoji: "🎵",
     ages: "4–19",
     spots: 25,

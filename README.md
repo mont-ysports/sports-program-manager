@@ -291,7 +291,7 @@ VITE_CHECKIN_PIN=1822
 # Program branding
 VITE_PROGRAM_NAME=2026 Children Vacation Sports Program
 VITE_PROGRAM_CONTACT_EMAIL=sports@yourorg.com
-VITE_PROGRAM_CONTACT_PHONE=+1 (555) 000-0000
+VITE_PROGRAM_CONTACT_PHONE=+231 777 592214
 VITE_PAYMENT_INSTRUCTIONS=Make payment via bank transfer to Account: 1234567890. Use your Registration ID as reference.
 VITE_PAYMENT_AMOUNT_USD=75
 ```
