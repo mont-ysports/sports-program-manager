@@ -75,6 +75,7 @@ export async function submitRegistration(formData) {
   if (result.registrationId) {
     const uploads = [];
     if (childPhoto?.base64) {
+      console.log('[Photos] Uploading child photo for', result.registrationId);
       uploads.push(
         scriptPost({
           action: 'uploadPhoto',
@@ -82,10 +83,13 @@ export async function submitRegistration(formData) {
           photoType: 'child',
           base64: childPhoto.base64,
           fileName: childPhoto.fileName || 'child-photo.jpg',
-        }).catch((e) => console.warn('Child photo upload failed:', e.message))
+        })
+        .then((r) => console.log('[Photos] Child photo uploaded:', r.fileUrl))
+        .catch((e) => console.error('[Photos] Child photo upload failed:', e.message))
       );
     }
     if (parentPhoto?.base64) {
+      console.log('[Photos] Uploading parent photo for', result.registrationId);
       uploads.push(
         scriptPost({
           action: 'uploadPhoto',
@@ -93,7 +97,9 @@ export async function submitRegistration(formData) {
           photoType: 'parent',
           base64: parentPhoto.base64,
           fileName: parentPhoto.fileName || 'parent-photo.jpg',
-        }).catch((e) => console.warn('Parent photo upload failed:', e.message))
+        })
+        .then((r) => console.log('[Photos] Parent photo uploaded:', r.fileUrl))
+        .catch((e) => console.error('[Photos] Parent photo upload failed:', e.message))
       );
     }
     await Promise.all(uploads);

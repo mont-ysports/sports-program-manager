@@ -1,82 +1,50 @@
 /**
  * Code.gs — 2026 Children Vacation Sports Program
- * Google Apps Script Web App
+ * Google Apps Script Web App — Entry Point
  *
- * Deploy as:  Execute as: Me | Who has access: Anyone
- *
- * This file is the entry point. All HTTP requests arrive here
- * and are dispatched to the appropriate handler module.
- *
- * ── Sheet tabs used ──────────────────────────────────────────
- *  "Registrations"  — one row per registration
- *  "CheckIns"       — audit log of every check-in event
- *  "Config"         — key/value pairs (check-in PIN, payment amount, etc.)
- * ─────────────────────────────────────────────────────────────
+ * Deploy as: Execute as: Me | Who has access: Anyone
  */
 
-// ── Configuration ─────────────────────────────────────────────────────────
-
-var SPREADSHEET_ID = ''; // Leave blank to use the spreadsheet this script is bound to
-
-var SHEET_REGISTRATIONS = 'Registrations';
-var SHEET_CHECKINS      = 'CheckIns';
-var SHEET_CONFIG        = 'Config';
-
+var SPREADSHEET_ID       = '';
+var SHEET_REGISTRATIONS  = 'Registrations';
+var SHEET_CHECKINS       = 'CheckIns';
+var SHEET_CONFIG         = 'Config';
 var CHECKIN_PIN_CONFIG_KEY = 'CHECKIN_PIN';
+var REG_ID_PREFIX        = 'SP-2026-';
+var REG_ID_PADDING       = 4;
 
-// Registration ID prefix and zero-padding width
-var REG_ID_PREFIX = 'SP-2026-';
-var REG_ID_PADDING = 4; // e.g. SP-2026-0001
+// ── Response helpers ──────────────────────────────────────────────────────
 
-// ── CORS Headers ──────────────────────────────────────────────────────────
-
-function _corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
-}
-
-function _jsonResponse(data, code) {
-  var output = ContentService
+function _jsonResponse(data) {
+  return ContentService
     .createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
-  return output;
 }
 
-function _errorResponse(message, code) {
-  return _jsonResponse({ status: 'error', message: message }, code || 400);
+function _errorResponse(message) {
+  return _jsonResponse({ status: 'error', message: message });
 }
 
 function _successResponse(data) {
   return _jsonResponse(Object.assign({ status: 'ok' }, data));
 }
 
-// ── Sheet helpers ─────────────────────────────────────────────────────────
+// ── Spreadsheet helpers ───────────────────────────────────────────────────
 
 function _getSpreadsheet() {
-  if (SPREADSHEET_ID) {
-    return SpreadsheetApp.openById(SPREADSHEET_ID);
-  }
+  if (SPREADSHEET_ID) return SpreadsheetApp.openById(SPREADSHEET_ID);
   return SpreadsheetApp.getActiveSpreadsheet();
 }
 
 function _getSheet(name) {
-  var ss = _getSpreadsheet();
-  var sheet = ss.getSheetByName(name);
-  if (!sheet) {
-    throw new Error('Sheet "' + name + '" not found. Run setupSheets() first.');
-  }
+  var sheet = _getSpreadsheet().getSheetByName(name);
+  if (!sheet) throw new Error('Sheet "' + name + '" not found. Run setupSheets() first.');
   return sheet;
 }
 
-/**
- * Return all rows from a sheet as an array of objects keyed by header row.
- */
 function _sheetToObjects(sheetName) {
   var sheet = _getSheet(sheetName);
-  var data = sheet.getDataRange().getValues();
+  var data  = sheet.getDataRange().getValues();
   if (data.length < 2) return [];
   var headers = data[0].map(function(h) { return String(h).trim(); });
   return data.slice(1).map(function(row) {
@@ -86,28 +54,20 @@ function _sheetToObjects(sheetName) {
   });
 }
 
-/**
- * Return column index (0-based) for a header name in a sheet.
- */
 function _colIndex(sheet, headerName) {
   var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   var idx = headers.indexOf(headerName);
   if (idx === -1) throw new Error('Column "' + headerName + '" not found.');
-  return idx + 1; // 1-based
+  return idx + 1;
 }
 
-/**
- * Find a row by matching a column value. Returns { rowIndex, rowData } or null.
- * rowIndex is 1-based (spreadsheet row number).
- */
 function _findRow(sheetName, columnName, value) {
   var sheet = _getSheet(sheetName);
-  var data = sheet.getDataRange().getValues();
+  var data  = sheet.getDataRange().getValues();
   if (data.length < 2) return null;
   var headers = data[0].map(function(h) { return String(h).trim(); });
-  var colIdx = headers.indexOf(columnName);
+  var colIdx  = headers.indexOf(columnName);
   if (colIdx === -1) return null;
-
   for (var i = 1; i < data.length; i++) {
     if (String(data[i][colIdx]).trim() === String(value).trim()) {
       var obj = {};
@@ -118,20 +78,15 @@ function _findRow(sheetName, columnName, value) {
   return null;
 }
 
-/**
- * Generate the next registration ID by reading the current max.
- */
 function _nextRegistrationId() {
-  var sheet = _getSheet(SHEET_REGISTRATIONS);
+  var sheet   = _getSheet(SHEET_REGISTRATIONS);
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return REG_ID_PREFIX + _pad(1, REG_ID_PADDING);
-
   var colIdx = _colIndex(sheet, 'registrationId');
   var ids = sheet.getRange(2, colIdx, lastRow - 1, 1).getValues()
     .map(function(r) { return String(r[0]); })
     .filter(function(id) { return id.startsWith(REG_ID_PREFIX); })
     .map(function(id) { return parseInt(id.replace(REG_ID_PREFIX, ''), 10) || 0; });
-
   var maxNum = ids.length > 0 ? Math.max.apply(null, ids) : 0;
   return REG_ID_PREFIX + _pad(maxNum + 1, REG_ID_PADDING);
 }
@@ -142,54 +97,56 @@ function _pad(n, width) {
   return s;
 }
 
-// ── Config helpers ────────────────────────────────────────────────────────
-
 function _getConfig(key) {
   try {
-    var sheet = _getSheet(SHEET_CONFIG);
-    var data = sheet.getDataRange().getValues();
+    var data = _getSheet(SHEET_CONFIG).getDataRange().getValues();
     for (var i = 1; i < data.length; i++) {
       if (String(data[i][0]).trim() === key) return String(data[i][1]).trim();
     }
-  } catch (e) {}
+  } catch(e) {}
   return null;
 }
 
-// ── doGet — handle GET requests ───────────────────────────────────────────
+function _setConfig(key, value) {
+  try {
+    var sheet = _getSheet(SHEET_CONFIG);
+    var data  = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][0]).trim() === key) {
+        sheet.getRange(i + 1, 2).setValue(value);
+        return;
+      }
+    }
+    sheet.appendRow([key, value, 'Auto-generated']);
+  } catch(e) {
+    console.error('_setConfig failed:', e.message);
+  }
+}
+
+// ── doGet — handles all standard GET requests ─────────────────────────────
 
 function doGet(e) {
   try {
-    var params = e.parameter || {};
-    var action = params.action || '';
-
+    var p      = e.parameter || {};
+    var action = p.action || '';
     switch (action) {
-      case 'getRegistration':
-        return handleGetRegistration(params);
-      case 'getByEmail':
-        return handleGetByEmail(params);
-      case 'getAllRegistrations':
-        return handleGetAllRegistrations(params);
-      case 'getProgramRoster':
-        return handleGetProgramRoster(params);
-      case 'getStats':
-        return handleGetStats(params);
-      case 'registerParticipant':
-        return handleRegisterParticipant(params);
-      case 'checkIn':
-        return handleCheckIn(params);
-      case 'updatePaymentStatus':
-        return handleUpdatePaymentStatus(params);
-      case 'redeemCoupon':
-        return handleRedeemCoupon(params);
-      default:
-        return _errorResponse('Unknown action: ' + action);
+      case 'getRegistration':     return handleGetRegistration(p);
+      case 'getByEmail':          return handleGetByEmail(p);
+      case 'getAllRegistrations':  return handleGetAllRegistrations(p);
+      case 'getProgramRoster':    return handleGetProgramRoster(p);
+      case 'getStats':            return handleGetStats(p);
+      case 'registerParticipant': return handleRegisterParticipant(p);
+      case 'checkIn':             return handleCheckIn(p);
+      case 'updatePaymentStatus': return handleUpdatePaymentStatus(p);
+      case 'redeemCoupon':        return handleRedeemCoupon(p);
+      default: return _errorResponse('Unknown action: ' + action);
     }
-  } catch (err) {
+  } catch(err) {
     return _errorResponse('Server error: ' + err.message);
   }
 }
 
-// ── doPost — handle POST requests ─────────────────────────────────────────
+// ── doPost — handles POST requests (used for large payloads like photos) ──
 
 function doPost(e) {
   try {
@@ -198,18 +155,18 @@ function doPost(e) {
       body = JSON.parse(e.postData.contents);
     }
     var action = body.action || '';
-
     switch (action) {
-      case 'registerParticipant':
-        return handleRegisterParticipant(body);
-      case 'checkIn':
-        return handleCheckIn(body);
-      case 'updatePaymentStatus':
-        return handleUpdatePaymentStatus(body);
+      case 'uploadPhoto':         return handleUploadPhoto(body);
+      case 'registerParticipant': return handleRegisterParticipant(body);
+      case 'checkIn':             return handleCheckIn(body);
+      case 'updatePaymentStatus': return handleUpdatePaymentStatus(body);
+      case 'redeemCoupon':        return handleRedeemCoupon(body);
       default:
-        return _errorResponse('Unknown action: ' + action);
+        // Fallback: merge body into params and try doGet
+        e.parameter = Object.assign({}, e.parameter || {}, body);
+        return doGet(e);
     }
-  } catch (err) {
+  } catch(err) {
     return _errorResponse('Server error: ' + err.message);
   }
 }
