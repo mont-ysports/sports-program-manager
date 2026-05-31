@@ -1,0 +1,189 @@
+/* ParentDashboard.css */
+
+.dashboard {
+  padding: var(--space-xl) 0 var(--space-2xl);
+}
+
+.dashboard__header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.dashboard__header h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  margin-bottom: var(--space-sm);
+}
+
+.dashboard__header p { color: var(--clr-text-muted); }
+
+/* ── Search card ──────────────────────────────────────────── */
+.dashboard__search {
+  margin-bottom: var(--space-lg);
+}
+
+.dashboard__search h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: var(--space-lg);
+}
+
+.search-type-toggle {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  background: var(--clr-surface-2);
+  border-radius: var(--radius-full);
+  padding: 4px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: transparent;
+  color: var(--clr-text-muted);
+  transition: all var(--transition-fast);
+}
+
+.toggle-btn.active {
+  background: white;
+  color: var(--clr-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-input-row {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.search-input-row .form-input {
+  flex: 1;
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+.dashboard__empty {
+  text-align: center;
+  padding: var(--space-2xl);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+}
+
+.dashboard__empty h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: var(--space-sm);
+}
+
+.dashboard__empty p { color: var(--clr-text-muted); }
+
+/* ── Registration card ────────────────────────────────────── */
+.dashboard__reg-card {
+  margin-bottom: var(--space-lg);
+}
+
+.reg-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--clr-border);
+  flex-wrap: wrap;
+}
+
+.reg-card__name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.reg-card__id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--clr-text-muted);
+  background: var(--clr-surface-2);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border);
+}
+
+.reg-card__statuses {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* Info grid */
+.reg-card__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.info-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-cell span {
+  font-size: 0.78rem;
+  color: var(--clr-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.info-cell strong {
+  font-size: 0.9rem;
+}
+
+/* QR section */
+.reg-card__qr {
+  border-top: 1px solid var(--clr-border);
+  padding-top: var(--space-lg);
+}
+
+.reg-card__qr h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--clr-text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.qr-row {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.qr-thumb {
+  width: 120px; height: 120px;
+  border: 3px solid white;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-sm);
+}
+
+.qr-row__actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 500px) {
+  .search-input-row { flex-direction: column; }
+}

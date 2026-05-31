@@ -1,0 +1,42 @@
+# render.yaml — Render.com deployment configuration
+# Commit this file to your repo root; Render will detect it automatically.
+
+services:
+  - type: web
+    name: sports-program-2026
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: false
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    routes:
+      # SPA fallback — all routes served from index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_APPS_SCRIPT_URL
+        sync: false   # Set manually in Render dashboard — do not commit this value
+      - key: VITE_STAFF_PASSWORD_HASH
+        sync: false
+      - key: VITE_CHECKIN_PIN
+        sync: false
+      - key: VITE_PROGRAM_NAME
+        value: 2026 Children Vacation Sports Program
+      - key: VITE_PROGRAM_CONTACT_EMAIL
+        sync: false
+      - key: VITE_PROGRAM_CONTACT_PHONE
+        sync: false
+      - key: VITE_PAYMENT_INSTRUCTIONS
+        sync: false
+      - key: VITE_PAYMENT_AMOUNT_USD
+        value: "75"

@@ -1,0 +1,100 @@
+/* QRScanner.css */
+
+.qr-scanner {
+  border: 2px solid var(--clr-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #000;
+  margin-bottom: var(--space-lg);
+}
+
+.qr-scanner__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--clr-secondary);
+}
+
+.qr-scanner__header h3 {
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.qr-scanner__viewport {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: #000;
+  overflow: hidden;
+}
+
+.qr-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Overlay with targeting frame */
+.qr-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+}
+
+.qr-frame {
+  position: relative;
+  width: 60%;
+  aspect-ratio: 1;
+  background: transparent;
+  /* Cut out the center */
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+}
+
+/* Corner decorations */
+.qr-frame__corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: var(--clr-accent);
+  border-style: solid;
+}
+
+.qr-frame__corner--tl { top: -2px;    left: -2px;  border-width: 4px 0 0 4px; }
+.qr-frame__corner--tr { top: -2px;    right: -2px; border-width: 4px 4px 0 0; }
+.qr-frame__corner--bl { bottom: -2px; left: -2px;  border-width: 0 0 4px 4px; }
+.qr-frame__corner--br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+/* Animated scan line */
+.qr-scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--clr-accent), transparent);
+  animation: scanLine 1.8s ease-in-out infinite;
+}
+
+@keyframes scanLine {
+  0%   { top: 0; opacity: 1; }
+  90%  { top: 100%; opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.qr-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 0; right: 0;
+  text-align: center;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.qr-scanner__error {
+  padding: var(--space-md);
+  background: #111;
+}

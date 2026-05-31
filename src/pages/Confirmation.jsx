@@ -1,0 +1,415 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, useLocation, Link } from 'react-router-dom';
+import { getRegistration, redeemCoupon } from '../utils/api.js';
+import { generateQRDataURL, downloadQRCode, printQRCode } from '../utils/qrcode.js';
+import { formatDate, calculateTotalCost, PROGRAMS, copyToClipboard } from '../utils/helpers.js';
+import './Confirmation.css';
+
+export default function Confirmation() {
+  const { registrationId } = useParams();
+  const location = useLocation();
+
+  const [reg, setReg] = useState(location.state || null);
+  const [qrDataUrl, setQrDataUrl] = useState('');
+  const [qrLoading, setQrLoading] = useState(true);
+  const [loading, setLoading] = useState(!location.state);
+  const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  // Coupon state
+  const [couponCode, setCouponCode] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState('Pending');
+
+  // Load registration data if not passed via state
+  useEffect(() => {
+    if (!reg && registrationId) {
+      getRegistration(registrationId)
+        .then((data) => { setReg(data); setPaymentStatus(data.paymentStatus || 'Pending'); })
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false));
+    } else if (reg) {
+      setPaymentStatus(reg.paymentStatus || 'Pending');
+    }
+  }, [registrationId]);
+
+  // Generate QR code once we have the ID
+  useEffect(() => {
+    if (!registrationId) return;
+    generateQRDataURL(registrationId)
+      .then(setQrDataUrl)
+      .catch(() => {})
+      .finally(() => setQrLoading(false));
+  }, [registrationId]);
+
+  async function handleCopy() {
+    const ok = await copyToClipboard(registrationId);
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
+
+  async function handleCouponSubmit(e) {
+    e.preventDefault();
+    if (!couponCode.trim()) return;
+
+    setCouponLoading(true);
+    setCouponError('');
+    setCouponSuccess('');
+
+    try {
+      const result = await redeemCoupon(registrationId, couponCode.trim().toUpperCase());
+      setPaymentStatus('Coupon Redeemed');
+      setCouponSuccess(result.message || 'Coupon applied successfully! Your registration is now confirmed.');
+      setCouponCode('');
+    } catch (err) {
+      setCouponError(err.message || 'Invalid or expired coupon code. Please try again.');
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="confirmation page-enter" style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}>
+        <span className="spinner spinner--lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="confirmation page-enter">
+        <div className="container container--narrow">
+          <div className="alert alert--error">⚠️ {error}</div>
+          <Link to="/" className="btn btn--primary" style={{ marginTop: 20 }}>← Back to Home</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const childName = reg
+    ? `${reg.childFirstName || ''} ${reg.childLastName || ''}`.trim()
+    : '—';
+
+  // Parse programs — stored as comma-separated string or array
+  const selectedPrograms = reg && reg.program
+    ? (Array.isArray(reg.program)
+        ? reg.program
+        : String(reg.program).split(',').map((p) => p.trim()).filter(Boolean))
+    : [];
+
+  // Build per-program cost breakdown
+  const costBreakdown = selectedPrograms.map((val) => {
+    const prog = PROGRAMS.find((p) => p.value === val);
+    return { label: prog ? prog.label : val, price: prog ? prog.price : 0 };
+  });
+
+  const totalCost = calculateTotalCost(selectedPrograms);
+
+  const paymentInstructions = import.meta.env.VITE_PAYMENT_INSTRUCTIONS ||
+    'Please make payment via bank transfer. Use your Registration ID as the payment reference.';
+
+  const isCouponRedeemed = paymentStatus === 'Coupon Redeemed';
+  const isPaid = paymentStatus === 'Paid' || isCouponRedeemed;
+
+  function StatusBadge() {
+    if (isCouponRedeemed) return <span className="badge badge--paid">🎟️ Coupon Redeemed</span>;
+    if (paymentStatus === 'Paid') return <span className="badge badge--paid">✅ Payment Confirmed</span>;
+    return <span className="badge badge--pending">⏳ Pending Payment</span>;
+  }
+
+  return (
+    <div className="confirmation page-enter">
+      <div className="container container--narrow">
+
+        {/* ── Success header ──────────────────────────────── */}
+        <div className="confirmation__hero">
+          <div className="confirmation__checkmark">🎉</div>
+          <h1>Registration Complete!</h1>
+          <p>
+            Welcome to the 2026 Children Vacation Sports Program,{' '}
+            <strong>{childName}</strong>!
+          </p>
+        </div>
+
+        {/* ── Registration ID + QR Code ───────────────────── */}
+        <div className="card confirmation__main">
+          <div className="confirmation__split">
+
+            {/* Left — details */}
+            <div className="confirmation__details">
+              <h2>Your Registration Details</h2>
+
+              <div className="detail-row">
+                <span>Registration ID</span>
+                <div className="detail-value id-value">
+                  <code>{registrationId}</code>
+                  <button
+                    className="btn btn--ghost btn--sm"
+                    onClick={handleCopy}
+                    title="Copy ID"
+                  >
+                    {copied ? '✓ Copied' : '📋 Copy'}
+                  </button>
+                </div>
+              </div>
+
+              {reg && (
+                <>
+                  <div className="detail-row">
+                    <span>Child</span>
+                    <strong>{childName}</strong>
+                  </div>
+                  <div className="detail-row">
+                    <span>Program</span>
+                    <strong>{selectedPrograms.join(', ') || reg.program}</strong>
+                  </div>
+                  <div className="detail-row">
+                    <span>Date of Birth</span>
+                    <strong>{formatDate(reg.dateOfBirth)}</strong>
+                  </div>
+                  <div className="detail-row">
+                    <span>Parent Email</span>
+                    <strong>{reg.parentEmail}</strong>
+                  </div>
+                </>
+              )}
+
+              <div className="detail-row">
+                <span>Status</span>
+                <StatusBadge />
+              </div>
+
+              <div className="detail-row">
+                <span>Amount Due</span>
+                <strong className={`amount ${isPaid ? 'amount--paid' : ''}`}>
+                  {isPaid ? '✓ Covered' : `$${totalCost}.00 USD`}
+                </strong>
+              </div>
+
+              {/* ── Inline coupon entry ── */}
+              {!isPaid && (
+                <div className="coupon-inline">
+                  <form onSubmit={handleCouponSubmit} className="coupon-inline__form">
+                    <label className="coupon-inline__label">
+                      🎟️ Have a coupon code?
+                    </label>
+                    <div className="coupon-input-row">
+                      <input
+                        type="text"
+                        className={`form-input coupon-input ${couponError ? 'error' : ''}`}
+                        value={couponCode}
+                        onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponError(''); }}
+                        placeholder="Enter coupon code"
+                        maxLength={30}
+                        disabled={couponLoading}
+                        autoComplete="off"
+                        spellCheck={false}
+                      />
+                      <button
+                        type="submit"
+                        className="btn btn--primary btn--sm"
+                        disabled={couponLoading || !couponCode.trim()}
+                      >
+                        {couponLoading
+                          ? <span className="spinner spinner--sm" />
+                          : 'Apply'
+                        }
+                      </button>
+                    </div>
+                    {couponError && (
+                      <span className="form-error" role="alert">❌ {couponError}</span>
+                    )}
+                    {couponSuccess && (
+                      <span className="coupon-inline__success">✅ {couponSuccess}</span>
+                    )}
+                  </form>
+                </div>
+              )}
+            </div>
+
+            {/* Right — QR code */}
+            <div className="confirmation__qr">
+              <h3>Your Check-In QR Code</h3>
+              {qrLoading ? (
+                <div className="qr-placeholder"><span className="spinner" /></div>
+              ) : qrDataUrl ? (
+                <div className="qr-wrapper">
+                  <img src={qrDataUrl} alt={`QR Code for registration ${registrationId}`} />
+                  <p className="qr-hint">Present this at check-in</p>
+                </div>
+              ) : (
+                <p className="text-muted">QR code unavailable</p>
+              )}
+
+              <div className="qr-actions">
+                <button
+                  className="btn btn--secondary btn--sm"
+                  onClick={() => qrDataUrl && downloadQRCode(qrDataUrl, `${registrationId}-qr.png`)}
+                  disabled={!qrDataUrl}
+                >
+                  ⬇ Download PNG
+                </button>
+                <button
+                  className="btn btn--ghost btn--sm"
+                  onClick={() => qrDataUrl && printQRCode(qrDataUrl, { childName, registrationId, program: reg?.program || '' })}
+                  disabled={!qrDataUrl}
+                >
+                  🖨 Print
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Coupon Redeemed success banner ─────────────── */}
+        {isCouponRedeemed && (
+          <div className="card coupon-success-card">
+            <div className="coupon-success__icon">🎟️</div>
+            <h2>Coupon Applied!</h2>
+            <p>{couponSuccess || 'Your coupon has been successfully applied. Your registration is now fully confirmed!'}</p>
+            <div className="alert alert--success" style={{ marginTop: 16, textAlign: 'left' }}>
+              <span>✅</span>
+              <div>
+                <strong>Registration Confirmed</strong> — No further payment is required.
+                Please save your QR code above and bring it on the program start date.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Payment / Coupon section (hidden after coupon redeemed) ── */}
+        {!isPaid && (
+          <div className="card confirmation__payment">
+            <div className="payment-icon">💳</div>
+            <h2>Payment Instructions</h2>
+
+            {/* Cost breakdown table */}
+            {costBreakdown.length > 0 && (
+              <div className="cost-breakdown">
+                <table className="cost-table">
+                  <thead>
+                    <tr>
+                      <th>Program</th>
+                      <th>Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {costBreakdown.map((item) => (
+                      <tr key={item.label}>
+                        <td>{item.label}</td>
+                        <td>${item.price}.00</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="cost-total-row">
+                      <td><strong>Total Due</strong></td>
+                      <td><strong>${totalCost}.00 USD</strong></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            )}
+
+            <div className="payment-instructions">
+              {paymentInstructions}
+            </div>
+
+            <div className="alert alert--warning" style={{ marginTop: 16 }}>
+              <span>⚠️</span>
+              <div>
+                <strong>Important:</strong> Your registration is reserved but will not be confirmed
+                until payment is received. Total amount due: <strong>${totalCost}.00 USD</strong>.
+                Use your Registration ID <code>{registrationId}</code> as the payment reference.
+              </div>
+            </div>
+
+
+          </div>
+        )}
+
+        {/* ── Next steps ──────────────────────────────────── */}
+        <div className="card confirmation__nextsteps">
+          <h2>What Happens Next?</h2>
+          <ol className="next-steps-list">
+            {!isPaid ? (
+              <>
+                <li>
+                  <span className="step-num">1</span>
+                  <div>
+                    <strong>Make your payment or apply a coupon</strong>
+                    <p>Follow the payment instructions above, or enter a valid coupon code to confirm instantly.</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="step-num">2</span>
+                  <div>
+                    <strong>Wait for confirmation</strong>
+                    <p>Once payment is verified your status will update to confirmed.</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="step-num">3</span>
+                  <div>
+                    <strong>Save your QR Code</strong>
+                    <p>Download or print the QR code above. Bring it on the first day for fast check-in.</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="step-num">4</span>
+                  <div>
+                    <strong>Show up & play!</strong>
+                    <p>Arrive on the program start date, present your QR code, and let the fun begin!</p>
+                  </div>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <span className="step-num">1</span>
+                  <div>
+                    <strong>Registration is confirmed! ✅</strong>
+                    <p>Your spot is fully secured. No further payment is required.</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="step-num">2</span>
+                  <div>
+                    <strong>Save your QR Code</strong>
+                    <p>Download or print the QR code above. Bring it on the first day for fast check-in.</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="step-num">3</span>
+                  <div>
+                    <strong>Show up & play!</strong>
+                    <p>Arrive on the program start date, present your QR code, and let the fun begin!</p>
+                  </div>
+                </li>
+              </>
+            )}
+          </ol>
+        </div>
+
+        {/* ── Actions ─────────────────────────────────────── */}
+        <div className="confirmation__actions">
+          <Link to="/dashboard" className="btn btn--secondary">
+            📊 View My Dashboard
+          </Link>
+          <Link to="/register" className="btn btn--outline">
+            + Register Another Child
+          </Link>
+          <Link to="/" className="btn btn--ghost">
+            ← Back to Home
+          </Link>
+        </div>
+
+      </div>
+    </div>
+  );
+}

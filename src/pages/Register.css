@@ -1,0 +1,251 @@
+/* Register.css */
+
+.register {
+  padding: var(--space-xl) 0 var(--space-2xl);
+}
+
+.register__header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.register__header h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  margin-bottom: var(--space-sm);
+}
+
+.register__header p {
+  color: var(--clr-text-muted);
+  font-size: 1.05rem;
+}
+
+/* ── Step progress indicator ──────────────────────────────── */
+.register__steps {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: var(--space-xl);
+  position: relative;
+}
+
+.register__steps::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: 50px;
+  right: 50px;
+  height: 2px;
+  background: var(--clr-border);
+  z-index: 0;
+}
+
+.step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.step-indicator__dot {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: 2px solid;
+  transition: all var(--transition-base);
+}
+
+.step-indicator.done .step-indicator__dot {
+  background: var(--clr-accent-green);
+  border-color: var(--clr-accent-green);
+  color: white;
+  font-size: 1rem;
+}
+
+.step-indicator.active .step-indicator__dot {
+  background: var(--clr-primary);
+  border-color: var(--clr-primary);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(255,87,34,0.2);
+}
+
+.step-indicator.pending .step-indicator__dot {
+  background: white;
+  border-color: var(--clr-border);
+  color: var(--clr-text-muted);
+}
+
+.step-indicator__label {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--clr-text-muted);
+}
+
+.step-indicator.active .step-indicator__label {
+  color: var(--clr-primary);
+}
+
+.step-indicator.done .step-indicator__label {
+  color: var(--clr-accent-green);
+}
+
+/* ── Form card ────────────────────────────────────────────── */
+.register__card {
+  padding: var(--space-xl) var(--space-2xl);
+}
+
+.form-step__title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 2px solid var(--clr-border);
+}
+
+.form-step__desc {
+  color: var(--clr-text-muted);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-lg);
+  line-height: 1.6;
+  background: var(--clr-surface-2);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--clr-accent);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
+/* Consent checkboxes */
+.consent-check {
+  margin-bottom: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--clr-surface-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border);
+}
+
+.consent-check.error {
+  border-color: var(--clr-error);
+  background: #FFF5F5;
+}
+
+.consent-check__label {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--clr-text);
+}
+
+.consent-check__label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  accent-color: var(--clr-primary);
+  cursor: pointer;
+}
+
+/* Nav buttons row */
+.register__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--clr-border);
+}
+
+.register__login-hint {
+  text-align: center;
+  margin-top: var(--space-lg);
+  color: var(--clr-text-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .register__card { padding: var(--space-lg); }
+  .form-row { grid-template-columns: 1fr; }
+  .register__steps::before { display: none; }
+  .step-indicator__label { display: none; }
+}
+
+/* ── Program checkbox group ───────────────────────────────── */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 12px 16px;
+  border: 2px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  background: var(--clr-surface);
+}
+
+.checkbox-option:hover {
+  border-color: var(--clr-primary);
+  background: rgba(255,87,34,0.04);
+}
+
+.checkbox-option.checked {
+  border-color: var(--clr-primary);
+  background: rgba(255,87,34,0.06);
+}
+
+.checkbox-option input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: var(--clr-primary);
+  cursor: pointer;
+}
+
+.checkbox-option__emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.checkbox-option__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.checkbox-option__text strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--clr-text);
+}
+
+.checkbox-option__text small {
+  font-size: 0.78rem;
+  color: var(--clr-text-muted);
+}
