@@ -204,7 +204,7 @@ function _setupConfigSheet(ss) {
     ["PAYMENT_AMOUNT", "75", "Registration fee in USD"],
     [
       "PAYMENT_INSTRUCTIONS",
-      "Make payment via bank transfer to Account: 1234567890. Use your Registration ID as reference.",
+      "Make payment via bank transfer to: ECOBANK Account #:6100083482 Account Title: Monrovia YMCA Branch.",
       "Payment instructions shown to parents",
     ],
     [

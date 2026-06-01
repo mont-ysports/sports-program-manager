@@ -28,7 +28,7 @@ export default function Home() {
             <span className="hero__title-accent">Sports Program</span>
           </h1>
           <p className="hero__subtitle">
-            An epic summer of sports, friendship, and memories. Choose from
+            An epic vacation of sports, friendship, and memories. Choose from
             exciting programs designed for children aged 4–19. Professional
             coaches, safe environment, unstoppable fun.
           </p>
@@ -61,7 +61,7 @@ export default function Home() {
       <section className="programs section" id="programs">
         <div className="container">
           <div className="section-header">
-            <h2>Choose Your Sport</h2>
+            <h2>Choose Your Program</h2>
             <p>
               Every program is led by qualified coaches focused on
               skill-building, teamwork, and fun.

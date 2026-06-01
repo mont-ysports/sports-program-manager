@@ -237,7 +237,7 @@ export default function Register() {
                     name="dateOfBirth"
                     label="Date of Birth"
                     required
-                    hint="Child must be 4–17 years old"
+                    hint="Child must be 4–19 years old"
                     touched={touched}
                     errors={errors}
                   >
@@ -402,7 +402,7 @@ export default function Register() {
                 <Field
                   name="allergies"
                   label="Known Allergies"
-                  hint="Enter 'None' if none known"
+                  hint="Leave blank if none known"
                   touched={touched}
                   errors={errors}
                 >
@@ -552,7 +552,7 @@ export default function Register() {
                   <input
                     type="text"
                     {...inputProps("parentAddress")}
-                    placeholder="12 Street, City, County"
+                    placeholder="P.O. Box XXXX, City, County"
                     autoComplete="street-address"
                   />
                 </Field>
