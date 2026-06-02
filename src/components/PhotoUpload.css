@@ -178,3 +178,12 @@
   .photo-guidelines { flex-direction: column; align-items: center; }
   .photo-guidelines__rules { align-items: flex-start; }
 }
+
+/* ── Flip camera button ───────────────────────────────────── */
+.flip-btn {
+  margin-left: auto;
+}
+
+.camera-controls {
+  flex-wrap: wrap;
+}

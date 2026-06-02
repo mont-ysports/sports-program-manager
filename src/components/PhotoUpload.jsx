@@ -41,6 +41,7 @@ async function resizeImage(file) {
 export default function PhotoUpload({ label, hint, value, onChange, error, required }) {
   const [mode, setMode]           = useState('idle'); // idle | camera | preview
   const [stream, setStream]       = useState(null);
+  const [facingMode, setFacingMode]   = useState('user'); // 'user' = front | 'environment' = back
   const [cameraError, setCameraError] = useState('');
   const [processing, setProcessing]   = useState(false);
 
@@ -77,16 +78,19 @@ export default function PhotoUpload({ label, hint, value, onChange, error, requi
   }
 
   // ── Camera ───────────────────────────────────────────────
-  async function startCamera() {
+  async function startCamera(facing) {
     setCameraError('');
+    const mode = facing || facingMode;
+    // Stop any existing stream before starting a new one
+    if (stream) stream.getTracks().forEach((t) => t.stop());
     try {
       const s = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        video: { facingMode: mode, width: { ideal: 640 }, height: { ideal: 480 } },
         audio: false,
       });
       setStream(s);
+      setFacingMode(mode);
       setMode('camera');
-      // Attach stream to video element after render
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = s;
@@ -98,10 +102,17 @@ export default function PhotoUpload({ label, hint, value, onChange, error, requi
         setCameraError('Camera permission denied. Please allow camera access in your browser settings, or upload a photo instead.');
       } else if (err.name === 'NotFoundError') {
         setCameraError('No camera found on this device. Please upload a photo instead.');
+      } else if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setCameraError('Camera not available. Please use the Upload Photo button instead.');
       } else {
         setCameraError('Could not access camera: ' + err.message);
       }
     }
+  }
+
+  async function flipCamera() {
+    const newFacing = facingMode === 'user' ? 'environment' : 'user';
+    await startCamera(newFacing);
   }
 
   function stopCamera() {
@@ -119,9 +130,11 @@ export default function PhotoUpload({ label, hint, value, onChange, error, requi
     canvas.width  = video.videoWidth;
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext('2d');
-    // Mirror the image (selfie mode)
-    ctx.translate(canvas.width, 0);
-    ctx.scale(-1, 1);
+    // Mirror only front camera (selfie mode) — back camera should not be mirrored
+    if (facingMode === 'user') {
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+    }
     ctx.drawImage(video, 0, 0);
 
     setProcessing(true);
@@ -215,6 +228,15 @@ export default function PhotoUpload({ label, hint, value, onChange, error, requi
               disabled={processing}
             >
               {processing ? <span className="spinner spinner--sm" /> : '📸 Capture'}
+            </button>
+            <button
+              type="button"
+              className="btn btn--secondary btn--sm flip-btn"
+              onClick={flipCamera}
+              disabled={processing}
+              title={facingMode === 'user' ? 'Switch to back camera' : 'Switch to front camera'}
+            >
+              🔄 {facingMode === 'user' ? 'Back' : 'Front'}
             </button>
           </div>
         </div>
