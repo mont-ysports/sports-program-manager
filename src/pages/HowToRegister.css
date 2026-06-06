@@ -1,0 +1,349 @@
+/* HowToRegister.css — Print-optimized registration guide */
+
+/* ── Screen styles ────────────────────────────────────────── */
+.htr-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+.htr-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--clr-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.htr-print-area {
+  background: white;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 40px 48px;
+  box-shadow: var(--shadow-card);
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.htr-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.htr-header__logo {
+  font-size: 3.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.htr-header__text {
+  flex: 1;
+}
+
+.htr-header__text h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--clr-primary);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.htr-header__sub {
+  font-size: 1rem;
+  color: var(--clr-text-muted);
+  font-weight: 600;
+}
+
+.htr-header__year {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--clr-border);
+  flex-shrink: 0;
+}
+
+/* ── Divider ──────────────────────────────────────────────── */
+.htr-divider {
+  border: none;
+  border-top: 2px solid var(--clr-border);
+  margin: var(--space-lg) 0;
+}
+
+/* ── Intro ────────────────────────────────────────────────── */
+.htr-intro {
+  font-size: 0.95rem;
+  color: var(--clr-text-muted);
+  line-height: 1.7;
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--clr-surface-2);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--clr-primary);
+}
+
+/* ── Steps ────────────────────────────────────────────────── */
+.htr-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.htr-step {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  page-break-inside: avoid;
+}
+
+.htr-step__num {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: var(--clr-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  margin-top: 2px;
+}
+
+.htr-step__content h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--clr-text);
+  margin-bottom: var(--space-sm);
+}
+
+.htr-step__content p {
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+  line-height: 1.6;
+  margin-bottom: var(--space-sm);
+}
+
+.htr-step__content p:last-child { margin-bottom: 0; }
+
+.htr-step__content ul {
+  padding-left: var(--space-lg);
+  margin: var(--space-sm) 0;
+}
+
+.htr-step__content ul li {
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+  line-height: 1.7;
+}
+
+.htr-url {
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--clr-secondary);
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  margin: var(--space-sm) 0;
+  word-break: break-all;
+}
+
+.htr-tip {
+  font-size: 0.8rem !important;
+  background: #FFF8E1;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  color: var(--clr-text) !important;
+  border-left: 3px solid var(--clr-warning);
+}
+
+/* ── Fees table ───────────────────────────────────────────── */
+.htr-fees {
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin: var(--space-sm) 0;
+}
+
+.htr-fee-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 12px;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.htr-fee-row:last-child { border-bottom: none; }
+
+.htr-fee-row span:first-child { color: var(--clr-text); font-weight: 600; }
+.htr-fee-row span:last-child  { color: var(--clr-primary); font-weight: 700; }
+
+.htr-fee-row--note span { color: var(--clr-text-muted) !important; font-style: italic; font-weight: 400 !important; }
+
+/* ── Tips box ─────────────────────────────────────────────── */
+.htr-tips {
+  background: #F0FFF4;
+  border: 1px solid #BBF7D0;
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  page-break-inside: avoid;
+}
+
+.htr-tips h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: var(--space-md);
+  color: var(--clr-text);
+}
+
+.htr-tips__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+.htr-tips__grid div {
+  font-size: 0.85rem;
+  color: var(--clr-text);
+  line-height: 1.5;
+}
+
+/* ── Dashboard section ────────────────────────────────────── */
+.htr-dashboard {
+  text-align: center;
+}
+
+.htr-dashboard h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: var(--space-sm);
+}
+
+.htr-dashboard p {
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+  line-height: 1.6;
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+.htr-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+
+.htr-footer__contact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.htr-footer__contact strong { font-size: 0.85rem; color: var(--clr-text); }
+.htr-footer__contact span  { color: var(--clr-text-muted); }
+
+.htr-footer__url {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.htr-footer__url strong { font-size: 0.85rem; color: var(--clr-text); }
+.htr-footer__url span   { font-family: 'Courier New', monospace; color: var(--clr-secondary); font-weight: 700; }
+
+.htr-footer__copy {
+  color: var(--clr-text-muted);
+  font-size: 0.75rem;
+  align-self: flex-end;
+}
+
+/* ── Print styles ─────────────────────────────────────────── */
+@media print {
+  /* Hide everything except the printable area */
+  body { background: white !important; }
+
+  .no-print { display: none !important; }
+
+  .htr-page {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .htr-print-area {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 24px 32px;
+  }
+
+  /* Ensure steps don't split across pages */
+  .htr-step        { page-break-inside: avoid; }
+  .htr-tips        { page-break-inside: avoid; }
+  .htr-footer      { page-break-inside: avoid; }
+
+  /* Tighten spacing for print */
+  .htr-steps       { gap: 10px; }
+  .htr-divider     { margin: 12px 0; }
+
+  /* Print font sizes */
+  .htr-header__text h1 { font-size: 1.3rem; }
+  .htr-step__content h3 { font-size: 0.9rem; }
+  .htr-step__content p,
+  .htr-step__content ul li { font-size: 0.8rem; }
+  .htr-intro { font-size: 0.85rem; }
+
+  /* Force black text for readability */
+  .htr-step__content p,
+  .htr-step__content ul li,
+  .htr-intro,
+  .htr-tips__grid div { color: #333 !important; }
+
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 15mm 15mm 15mm 15mm;
+  }
+}
+
+/* ── Coupon step highlight ────────────────────────────────── */
+.htr-step--highlight {
+  border: 2px solid #FFD700;
+  background: #FFFBEB;
+}
+
+.htr-step__num--coupon {
+  background: #F59E0B !important;
+}
+
+.htr-coupon-note {
+  margin-top: var(--space-sm);
+  padding: 8px 12px;
+  background: #FEF3C7;
+  border-left: 3px solid #F59E0B;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: #92400E;
+  line-height: 1.5;
+}
+
+@media print {
+  .htr-step--highlight {
+    border: 2px solid #F59E0B;
+    background: #FFFBEB !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

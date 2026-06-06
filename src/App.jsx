@@ -9,6 +9,7 @@ import CheckIn from './pages/CheckIn.jsx';
 import StaffPortal from './pages/StaffPortal.jsx';
 import StaffLogin from './pages/StaffLogin.jsx';
 import NotFound from './pages/NotFound.jsx';
+import HowToRegister from './pages/HowToRegister.jsx';
 import { StaffAuthProvider } from './hooks/useStaffAuth.jsx';
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="checkin" element={<CheckIn />} />
           <Route path="staff/login" element={<StaffLogin />} />
           <Route path="staff" element={<StaffPortal />} />
+          <Route path="how-to-register" element={<HowToRegister />} />
           <Route path="404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Route>
