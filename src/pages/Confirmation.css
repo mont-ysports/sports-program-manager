@@ -403,3 +403,68 @@
   font-weight: 700;
   color: var(--clr-accent-green);
 }
+
+/* ── WhatsApp join section ────────────────────────────────── */
+.whatsapp-join {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid rgba(0, 168, 70, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.whatsapp-join__text {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.whatsapp-join__icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.whatsapp-join__text strong {
+  display: block;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--clr-text);
+  margin-bottom: 2px;
+}
+
+.whatsapp-join__text p {
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+}
+
+.btn--whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 14px 24px;
+  background: #25D366;
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+}
+
+.btn--whatsapp:hover {
+  background: #1ebe5c;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
+  color: white;
+}
+
+.btn--whatsapp:active {
+  transform: scale(0.97);
+}

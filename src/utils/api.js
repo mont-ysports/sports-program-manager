@@ -151,3 +151,12 @@ export async function getStats() {
 export async function redeemCoupon(registrationId, couponCode) {
   return scriptCall({ action: 'redeemCoupon', registrationId, couponCode });
 }
+
+// ── WhatsApp ──────────────────────────────────────────────
+
+/**
+ * Fetch the WhatsApp group invite link from the Config sheet.
+ */
+export async function getWhatsAppGroupLink() {
+  return scriptCall({ action: 'getWhatsAppLink' });
+}
